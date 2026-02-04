@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/qoofa/AI-Recommendation-System/internal/storage/mongodb"
+	"github.com/qoofa/AI-Recommendation-System/internal/transport/food"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest"
 )
 
@@ -18,5 +19,7 @@ func New() (*chi.Mux, error) {
 		return nil, err
 	}
 
-	return rest.NewRouter(), nil
+	foodHandler := food.NewFoodHandler()
+
+	return rest.NewRouter(foodHandler), nil
 }
