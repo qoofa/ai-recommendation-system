@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+torch
+transformers==4.39.3
+sentence-transformers==2.6.1
