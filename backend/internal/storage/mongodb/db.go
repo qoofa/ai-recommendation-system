@@ -21,6 +21,7 @@ func New(dsn string) (*mongo.Client, error) {
 	}
 
 	if err := client.Ping(ctx, nil); err != nil {
+		fmt.Println("Failed to connect mongodb")
 		return nil, err
 	}
 	fmt.Println("Connected to mongodb")

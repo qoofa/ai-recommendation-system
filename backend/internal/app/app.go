@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/go-chi/chi/v5"
@@ -16,7 +17,7 @@ type App struct {
 func New() (*chi.Mux, error) {
 	_, err := mongodb.New(os.Getenv("DB_DSN"))
 	if err != nil {
-		return nil, err
+		fmt.Fprintf(os.Stderr, "DATABASE error: %v", err)
 	}
 
 	foodHandler := food.NewFoodHandler()
