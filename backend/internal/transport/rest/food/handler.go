@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/qoofa/AI-Recommendation-System/internal/transport/response"
+	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/response"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 )

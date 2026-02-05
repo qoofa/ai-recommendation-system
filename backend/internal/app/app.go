@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/qoofa/AI-Recommendation-System/internal/storage/mongodb"
-	"github.com/qoofa/AI-Recommendation-System/internal/transport/food"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest"
+	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/food"
 )
 
 type App struct {

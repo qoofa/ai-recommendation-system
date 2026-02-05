@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/qoofa/AI-Recommendation-System/internal/transport/food"
+	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/food"
 )
 
 func NewRouter(foodHandler *food.FoodHandler) *chi.Mux {
