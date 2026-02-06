@@ -58,7 +58,6 @@ func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemMod
 	}
 
 	result := []string{}
-
 	for _, v := range resp.InsertedIDs {
 		if id, ok := v.(primitive.ObjectID); ok {
 			result = append(result, id.Hex())
