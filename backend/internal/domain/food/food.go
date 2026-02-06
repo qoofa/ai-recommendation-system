@@ -3,8 +3,6 @@ package food
 import (
 	"context"
 	"time"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Combo struct {
@@ -13,7 +11,7 @@ type Combo struct {
 }
 
 type FoodItemModel struct {
-	ID          bson.ObjectID
+	ID          string
 	Name        string
 	Description string
 	Price       float64
