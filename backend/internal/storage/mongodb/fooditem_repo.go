@@ -17,12 +17,20 @@ type FoodRepository struct {
 }
 
 func NewFoodRepository(db *mongo.Database) *FoodRepository {
+	if db == nil {
+		return nil
+	}
+
 	return &FoodRepository{
 		collection: db.Collection("food_items"),
 	}
 }
 
 func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (string, error) {
+	if item == nil {
+		return "", appErr.New(appErr.BadRequest, "invalid input")
+	}
+
 	now := time.Now()
 	item.CreatedAt = now
 	item.UpdatedAt = now
