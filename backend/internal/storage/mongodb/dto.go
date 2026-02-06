@@ -21,6 +21,7 @@ type FoodItemModel struct {
 	SalesCount  int           `bson:"salesCount,omitempty"`
 
 	Embedding []float64 `bson:"embedding,omitempty"`
+	Score     float64   `bson:"score,omitempty"`
 
 	Combos []Combo `bson:"combos,omitempty"`
 

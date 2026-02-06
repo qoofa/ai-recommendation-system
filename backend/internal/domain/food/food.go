@@ -20,6 +20,7 @@ type FoodItemModel struct {
 	SalesCount  int
 
 	Embedding []float64
+	Score     float64
 
 	Combos []Combo
 

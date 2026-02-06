@@ -155,6 +155,7 @@ func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
 		Category:    d.Category,
 		SalesCount:  d.SalesCount,
 		Embedding:   d.Embedding,
+		Score:       d.Score,
 		CreatedAt:   d.CreatedAt,
 		UpdatedAt:   d.UpdatedAt,
 	}
@@ -188,6 +189,7 @@ func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
 		Category:    d.Category,
 		SalesCount:  d.SalesCount,
 		Embedding:   d.Embedding,
+		Score:       d.Score,
 		CreatedAt:   d.CreatedAt,
 		UpdatedAt:   d.UpdatedAt,
 	}
