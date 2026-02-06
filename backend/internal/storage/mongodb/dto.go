@@ -3,7 +3,7 @@ package mongodb
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Combo struct {
@@ -12,13 +12,13 @@ type Combo struct {
 }
 
 type FoodItemModel struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name,omitempty"`
-	Description string             `bson:"description,omitempty"`
-	Price       float64            `bson:"price,omitempty"`
-	Image       string             `bson:"image,omitempty"`
-	Category    string             `bson:"category,omitempty"`
-	SalesCount  int                `bson:"salesCount,omitempty"`
+	ID          bson.ObjectID `bson:"_id,omitempty"`
+	Name        string        `bson:"name,omitempty"`
+	Description string        `bson:"description,omitempty"`
+	Price       float64       `bson:"price,omitempty"`
+	Image       string        `bson:"image,omitempty"`
+	Category    string        `bson:"category,omitempty"`
+	SalesCount  int           `bson:"salesCount,omitempty"`
 
 	Embedding []float64 `bson:"embedding,omitempty"`
 

@@ -7,7 +7,6 @@ import (
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -168,7 +167,7 @@ func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
 	}
 
 	if d.ID != "" {
-		if oid, err := primitive.ObjectIDFromHex(d.ID); err == nil {
+		if oid, err := bson.ObjectIDFromHex(d.ID); err == nil {
 			dbModel.ID = oid
 		}
 	}
