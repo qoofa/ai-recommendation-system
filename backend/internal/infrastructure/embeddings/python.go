@@ -1,6 +1,7 @@
 package embeddings
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,8 +13,12 @@ import (
 )
 
 type Response struct {
-	status    bool
-	embedding []float64
+	Status    bool      `json:"status"`
+	Embedding []float64 `json:"embedding"`
+}
+
+type Request struct {
+	Text string `json:"text"`
 }
 
 type pythonProvider struct {
@@ -23,14 +28,24 @@ type pythonProvider struct {
 
 func NewPythonProvider(url string) *pythonProvider {
 	return &pythonProvider{
-		url:    strings.TrimRight(url, "/") + "/",
+		url:    strings.TrimRight(url, "/"),
 		client: &http.Client{},
 	}
 }
 
 func (p *pythonProvider) GetEmbedding(ctx context.Context, text string) ([]float64, error) {
+	reqBody, err := json.Marshal(Request{Text: text})
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
+	}
 
-	resp, err := p.client.Get(p.url)
+	req, err := http.NewRequestWithContext(ctx, "POST", p.url+"/embed", bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}
@@ -53,5 +68,5 @@ func (p *pythonProvider) GetEmbedding(ctx context.Context, text string) ([]float
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}
 
-	return response.embedding, nil
+	return response.Embedding, nil
 }
