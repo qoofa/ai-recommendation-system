@@ -12,28 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type Combo struct {
-	ItemID string `bson:"itemId"`
-	Count  int    `bson:"count"`
-}
-
-type FoodItemModel struct {
-	ID          bson.ObjectID `bson:"_id,omitempty"`
-	Name        string        `bson:"name"`
-	Description string        `bson:"description"`
-	Price       float64       `bson:"price"`
-	Image       string        `bson:"image"`
-	Category    string        `bson:"category"`
-	SalesCount  int           `bson:"salesCount"`
-
-	Embedding []float64 `bson:"embedding"`
-
-	Combos []Combo `bson:"combos"`
-
-	CreatedAt time.Time `bson:"createdAt"`
-	UpdatedAt time.Time `bson:"updatedAt"`
-}
-
 type FoodRepository struct {
 	collection *mongo.Collection
 }
@@ -44,7 +22,7 @@ func NewFoodRepository(db *mongo.Database) *FoodRepository {
 	}
 }
 
-func (r *FoodRepository) Save(ctx context.Context, item food.FoodItemModel) (string, error) {
+func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (string, error) {
 	now := time.Now()
 	item.CreatedAt = now
 	item.UpdatedAt = now
@@ -137,4 +115,68 @@ func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64
 	}
 
 	return foodItem, nil
+}
+
+func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
+	if d == nil {
+		return nil
+	}
+
+	dbModel := &FoodItemModel{
+		Name:        d.Name,
+		Description: d.Description,
+		Price:       d.Price,
+		Image:       d.Image,
+		Category:    d.Category,
+		SalesCount:  d.SalesCount,
+		Embedding:   d.Embedding,
+		CreatedAt:   d.CreatedAt,
+		UpdatedAt:   d.UpdatedAt,
+	}
+
+	if d.Combos != nil {
+		dbModel.Combos = make([]Combo, len(d.Combos))
+		for i, v := range d.Combos {
+			dbModel.Combos[i] = Combo(v)
+		}
+	}
+
+	if d.ID != "" {
+		if oid, err := primitive.ObjectIDFromHex(d.ID); err == nil {
+			dbModel.ID = oid
+		}
+	}
+
+	return dbModel
+}
+
+func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
+	if d == nil {
+		return nil
+	}
+
+	model := &food.FoodItemModel{
+		Name:        d.Name,
+		Description: d.Description,
+		Price:       d.Price,
+		Image:       d.Image,
+		Category:    d.Category,
+		SalesCount:  d.SalesCount,
+		Embedding:   d.Embedding,
+		CreatedAt:   d.CreatedAt,
+		UpdatedAt:   d.UpdatedAt,
+	}
+
+	if d.Combos != nil {
+		model.Combos = make([]food.Combo, len(d.Combos))
+		for i, v := range d.Combos {
+			model.Combos[i] = food.Combo(v)
+		}
+	}
+
+	if !d.ID.IsZero() {
+		model.ID = d.ID.Hex()
+	}
+
+	return model
 }
