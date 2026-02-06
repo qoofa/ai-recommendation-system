@@ -26,8 +26,9 @@ func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (st
 	now := time.Now()
 	item.CreatedAt = now
 	item.UpdatedAt = now
+	data := r.toDto(item)
 
-	result, err := r.collection.InsertOne(ctx, item)
+	result, err := r.collection.InsertOne(ctx, data)
 	if err != nil {
 		return "", appErr.Wrap(appErr.Internal, "internal error", err)
 	}
@@ -46,7 +47,7 @@ func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodIte
 		return nil, appErr.New(appErr.BadRequest, "invalid id")
 	}
 
-	var m food.FoodItemModel
+	var m FoodItemModel
 	err = r.collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&m)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -55,7 +56,7 @@ func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodIte
 		return nil, err
 	}
 
-	return &m, nil
+	return r.toDomain(&m), nil
 }
 
 func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]food.FoodItemModel, error) {
@@ -71,12 +72,12 @@ func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]foo
 	}
 	defer cursor.Close(ctx)
 
-	var foodItem []food.FoodItemModel
+	var foodItem []FoodItemModel
 	if err := cursor.All(ctx, &foodItem); err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}
 
-	return foodItem, nil
+	return r.toDomains(foodItem), nil
 }
 
 func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]food.FoodItemModel, error) {
@@ -109,12 +110,12 @@ func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64
 	}
 	defer cursor.Close(ctx)
 
-	var foodItem []food.FoodItemModel
+	var foodItem []FoodItemModel
 	if err := cursor.All(ctx, &foodItem); err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}
 
-	return foodItem, nil
+	return r.toDomains(foodItem), nil
 }
 
 func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
@@ -179,4 +180,16 @@ func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
 	}
 
 	return model
+}
+
+func (r *FoodRepository) toDomains(models []FoodItemModel) []food.FoodItemModel {
+	if models == nil {
+		return nil
+	}
+
+	result := make([]food.FoodItemModel, len(models))
+	for i := range models {
+		result[i] = *r.toDomain(&models[i])
+	}
+	return result
 }
