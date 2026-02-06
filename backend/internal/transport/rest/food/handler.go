@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/response"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
@@ -11,11 +12,13 @@ import (
 
 type FoodHandler struct {
 	validate *validator.Validate
+	service  food.Service
 }
 
-func NewFoodHandler() *FoodHandler {
+func NewFoodHandler(s food.Service) *FoodHandler {
 	return &FoodHandler{
 		validate: validator.New(),
+		service:  s,
 	}
 }
 
@@ -29,5 +32,10 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, nil)
+	d, err := h.service.Search(r.Context(), query)
+	if err != nil {
+		response.Error(w, err)
+	}
+
+	response.Success(w, d)
 }

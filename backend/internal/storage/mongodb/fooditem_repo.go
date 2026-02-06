@@ -6,6 +6,7 @@ import (
 	"time"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
+	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -43,7 +44,7 @@ func NewFoodRepository(db *mongo.Database) *FoodRepository {
 	}
 }
 
-func (r *FoodRepository) Save(ctx context.Context, item FoodItemModel) (string, error) {
+func (r *FoodRepository) Save(ctx context.Context, item food.FoodItemModel) (string, error) {
 	now := time.Now()
 	item.CreatedAt = now
 	item.UpdatedAt = now
@@ -61,13 +62,13 @@ func (r *FoodRepository) Save(ctx context.Context, item FoodItemModel) (string, 
 	return oid.Hex(), nil
 }
 
-func (r *FoodRepository) FindByID(ctx context.Context, id string) (*FoodItemModel, error) {
+func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodItemModel, error) {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, appErr.New(appErr.BadRequest, "invalid id")
 	}
 
-	var m FoodItemModel
+	var m food.FoodItemModel
 	err = r.collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&m)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -79,7 +80,7 @@ func (r *FoodRepository) FindByID(ctx context.Context, id string) (*FoodItemMode
 	return &m, nil
 }
 
-func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]FoodItemModel, error) {
+func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]food.FoodItemModel, error) {
 	filter := bson.M{
 		"$or": bson.A{
 			bson.M{"name": bson.M{"$regex": query, "$options": "i"}},
@@ -92,7 +93,7 @@ func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]Foo
 	}
 	defer cursor.Close(ctx)
 
-	var foodItem []FoodItemModel
+	var foodItem []food.FoodItemModel
 	if err := cursor.All(ctx, &foodItem); err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}
@@ -100,7 +101,7 @@ func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]Foo
 	return foodItem, nil
 }
 
-func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]FoodItemModel, error) {
+func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]food.FoodItemModel, error) {
 	pipeline := bson.A{
 		bson.M{
 			"$vectorSearch": bson.M{
@@ -130,7 +131,7 @@ func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64
 	}
 	defer cursor.Close(ctx)
 
-	var foodItem []FoodItemModel
+	var foodItem []food.FoodItemModel
 	if err := cursor.All(ctx, &foodItem); err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
 	}

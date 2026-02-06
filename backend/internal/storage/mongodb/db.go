@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func New(dsn string) (*mongo.Client, error) {
+func New(dsn, dbname string) (*mongo.Database, error) {
 	clientOptions := options.Client().ApplyURI(dsn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -26,5 +26,5 @@ func New(dsn string) (*mongo.Client, error) {
 	}
 	fmt.Println("Connected to mongodb")
 
-	return client, nil
+	return client.Database(dbname), nil
 }

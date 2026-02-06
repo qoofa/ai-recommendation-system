@@ -1,6 +1,7 @@
 package food
 
 import (
+	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -26,4 +27,15 @@ type FoodItemModel struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type Service interface {
+	Search(ctx context.Context, query string) (*[]FoodItemModel, error)
+}
+
+type Repository interface {
+	Save(ctx context.Context, item FoodItemModel) (string, error)
+	FindByID(ctx context.Context, id string) (*FoodItemModel, error)
+	FindByKeyword(ctx context.Context, query string) ([]FoodItemModel, error)
+	FindBySemantic(ctx context.Context, embedding []float64) ([]FoodItemModel, error)
 }
