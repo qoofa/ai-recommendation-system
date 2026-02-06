@@ -2,7 +2,9 @@ package response
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 )
@@ -20,6 +22,10 @@ type FieldError struct {
 
 func Error(w http.ResponseWriter, err error) {
 	var ae *appErr.AppError
+
+	if e, ok := err.(*appErr.AppError); ok {
+		fmt.Fprint(os.Stderr, e.Err)
+	}
 
 	if errors.As(err, &ae) {
 		writeAppError(w, ae)
