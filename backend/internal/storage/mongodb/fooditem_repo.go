@@ -49,6 +49,24 @@ func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (st
 	return oid.Hex(), nil
 }
 
+func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemModel) ([]string, error) {
+	data := r.toDtos(item, time.Now())
+
+	resp, err := r.collection.InsertMany(ctx, data)
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
+	}
+
+	result := []string{}
+
+	for _, v := range resp.InsertedIDs {
+		if id, ok := v.(primitive.ObjectID); ok {
+			result = append(result, id.Hex())
+		}
+	}
+	return result, nil
+}
+
 func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodItemModel, error) {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
@@ -191,13 +209,25 @@ func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
 }
 
 func (r *FoodRepository) toDomains(models []FoodItemModel) []food.FoodItemModel {
-	if models == nil {
-		return nil
-	}
-
 	result := make([]food.FoodItemModel, len(models))
 	for i := range models {
 		result[i] = *r.toDomain(&models[i])
+	}
+	return result
+}
+
+func (r *FoodRepository) toDtos(d []food.FoodItemModel, overrideTime time.Time) []FoodItemModel {
+	result := make([]FoodItemModel, len(d))
+
+	shouldOverried := !overrideTime.IsZero()
+
+	for i := range d {
+		result[i] = *r.toDto(&d[i])
+
+		if shouldOverried {
+			result[i].CreatedAt = overrideTime
+			result[i].UpdatedAt = overrideTime
+		}
 	}
 	return result
 }
