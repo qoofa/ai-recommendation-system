@@ -35,6 +35,7 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 	d, err := h.service.Search(r.Context(), query)
 	if err != nil {
 		response.Error(w, err)
+		return
 	}
 
 	response.Success(w, d)
