@@ -45,3 +45,16 @@ func (s *service) Search(ctx context.Context, query string) (*[]FoodItemModel, e
 
 	return nil, nil
 }
+
+func (s *service) Create(ctx context.Context, d FoodItemModel) (string, error) {
+	query := fmt.Sprintf("%s. %s", d.Name, d.Description)
+
+	embedding, err := s.embedding.GetEmbedding(ctx, query)
+	if err != nil {
+		return "", err
+	}
+
+	d.Embedding = embedding
+
+	return s.repo.Save(ctx, &d)
+}

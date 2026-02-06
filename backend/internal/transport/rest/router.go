@@ -9,7 +9,8 @@ func NewRouter(foodHandler *food.FoodHandler) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/search", foodHandler.Search)
+		r.Get("/food/search", foodHandler.Search)
+		r.Post("/food", foodHandler.Create)
 	})
 
 	return r

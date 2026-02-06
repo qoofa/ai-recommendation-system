@@ -41,9 +41,9 @@ func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (st
 		return "", appErr.Wrap(appErr.Internal, "internal error", err)
 	}
 
-	oid, ok := result.InsertedID.(primitive.ObjectID)
+	oid, ok := result.InsertedID.(bson.ObjectID)
 	if !ok {
-		return "", appErr.Wrap(appErr.Internal, "internal error", nil)
+		return "", appErr.New(appErr.Internal, "internal error")
 	}
 
 	return oid.Hex(), nil
@@ -59,7 +59,7 @@ func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemMod
 
 	result := []string{}
 	for _, v := range resp.InsertedIDs {
-		if id, ok := v.(primitive.ObjectID); ok {
+		if id, ok := v.(bson.ObjectID); ok {
 			result = append(result, id.Hex())
 		}
 	}

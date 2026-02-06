@@ -1,6 +1,7 @@
 package food
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -39,4 +40,26 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success(w, d)
+}
+
+func (h *FoodHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var body createDto
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		response.Error(w, appErr.New(appErr.BadRequest, "invalid body"))
+		return
+	}
+
+	if err := h.validate.Struct(body); err != nil {
+		response.Error(w, appErr.Wrap(appErr.BadRequest, "validation error", err))
+		return
+	}
+
+	result, err := h.service.Create(r.Context(), *body.toDomain())
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	response.Success(w, result)
 }
