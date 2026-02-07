@@ -71,6 +71,20 @@ func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemMod
 	return result, nil
 }
 
+func (r *FoodRepository) Find(ctx context.Context) ([]food.FoodItemModel, error) {
+	cursor, err := r.collection.Find(ctx, bson.D{{}})
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal", err)
+	}
+
+	var d []FoodItemModel
+	if err := cursor.All(ctx, &d); err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal", err)
+	}
+
+	return r.toDomains(d), nil
+}
+
 func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodItemModel, error) {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {

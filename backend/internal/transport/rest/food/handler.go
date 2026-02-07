@@ -23,6 +23,21 @@ func NewFoodHandler(s food.Service) *FoodHandler {
 	}
 }
 
+func (h *FoodHandler) Find(w http.ResponseWriter, r *http.Request) {
+	d, err := h.service.Find(r.Context())
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	data := make([]SearchResponseDto, len(d))
+	for i := range d {
+		data[i] = TOSearchResponse(d[i])
+	}
+
+	response.Success(w, data)
+}
+
 func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 	var q = r.URL.Query()
 

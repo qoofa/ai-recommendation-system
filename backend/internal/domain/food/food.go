@@ -29,12 +29,14 @@ type FoodItemModel struct {
 }
 
 type Service interface {
+	Find(ctx context.Context) ([]FoodItemModel, error)
 	Search(ctx context.Context, query string) ([]FoodItemModel, error)
 	Create(ctx context.Context, d FoodItemModel) (string, error)
 }
 
 type Repository interface {
 	Save(ctx context.Context, item *FoodItemModel) (string, error)
+	Find(ctx context.Context) ([]FoodItemModel, error)
 	InsertMany(ctx context.Context, item []FoodItemModel) ([]string, error)
 	FindByID(ctx context.Context, id string) (*FoodItemModel, error)
 	FindByKeyword(ctx context.Context, query string) ([]FoodItemModel, error)

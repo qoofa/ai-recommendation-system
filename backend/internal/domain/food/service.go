@@ -20,6 +20,15 @@ func NewService(r Repository, e embedding.Embedder) *service {
 	}
 }
 
+func (s *service) Find(ctx context.Context) ([]FoodItemModel, error) {
+	result, err := s.repo.Find(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (s *service) Search(ctx context.Context, query string) ([]FoodItemModel, error) {
 	if query == "" {
 		return nil, nil
