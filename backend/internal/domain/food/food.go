@@ -29,7 +29,7 @@ type FoodItemModel struct {
 }
 
 type Service interface {
-	Search(ctx context.Context, query string) (*[]FoodItemModel, error)
+	Search(ctx context.Context, query string) ([]FoodItemModel, error)
 	Create(ctx context.Context, d FoodItemModel) (string, error)
 }
 

@@ -39,7 +39,12 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, d)
+	data := make([]SearchResponseDto, len(d))
+	for i := range d {
+		data[i] = TOSearchResponse(d[i])
+	}
+
+	response.Success(w, data)
 }
 
 func (h *FoodHandler) Create(w http.ResponseWriter, r *http.Request) {

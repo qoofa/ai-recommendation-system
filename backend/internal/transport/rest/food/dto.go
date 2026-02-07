@@ -1,6 +1,10 @@
 package food
 
-import "github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+import (
+	"time"
+
+	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+)
 
 type createDto struct {
 	Name        string  `json:"name" validate:"required,min=2,max=100"`
@@ -19,5 +23,33 @@ func (d *createDto) toDomain() *food.FoodItemModel {
 		Image:       d.Image,
 		Category:    d.Category,
 		SalesCount:  d.SalesCount,
+	}
+}
+
+type SearchResponseDto struct {
+	ID          string    `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Price       float64   `json:"price,omitempty"`
+	Image       string    `json:"image,omitempty"`
+	Category    string    `json:"category,omitempty"`
+	SalesCount  int       `json:"sales_count,omitempty"`
+	Score       float64   `json:"score,omitempty"`
+	CreatedAt   time.Time `json:"created_at,omitempty"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty"`
+}
+
+func TOSearchResponse(m food.FoodItemModel) SearchResponseDto {
+	return SearchResponseDto{
+		ID:          m.ID,
+		Name:        m.Name,
+		Description: m.Description,
+		Price:       m.Price,
+		Image:       m.Image,
+		Category:    m.Category,
+		SalesCount:  m.SalesCount,
+		Score:       m.Score,
+		CreatedAt:   m.CreatedAt,
+		UpdatedAt:   m.UpdatedAt,
 	}
 }

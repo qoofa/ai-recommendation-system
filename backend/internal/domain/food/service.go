@@ -20,7 +20,7 @@ func NewService(r Repository, e embedding.Embedder) *service {
 	}
 }
 
-func (s *service) Search(ctx context.Context, query string) (*[]FoodItemModel, error) {
+func (s *service) Search(ctx context.Context, query string) ([]FoodItemModel, error) {
 	if query == "" {
 		return nil, nil
 	}
@@ -84,10 +84,11 @@ func (s *service) Search(ctx context.Context, query string) (*[]FoodItemModel, e
 
 	result := make([]FoodItemModel, limit)
 	for i := 0; i < limit; i++ {
+		combinedSlice[i].item.Embedding = nil
 		result[i] = combinedSlice[i].item
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (s *service) Create(ctx context.Context, d FoodItemModel) (string, error) {
