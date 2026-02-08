@@ -6,17 +6,18 @@ import (
 	"sort"
 
 	"github.com/qoofa/AI-Recommendation-System/internal/domain/embedding"
-
+	orderembeddings "github.com/qoofa/AI-Recommendation-System/internal/domain/orderEmbeddings"
+	
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 )
 
 type service struct {
 	repo      Repository
-	orderRepo OrderRepository
+	orderRepo orderembeddings.Repository
 	embedding embedding.Embedder
 }
 
-func New(r Repository, o OrderRepository, e embedding.Embedder) *service {
+func New(r Repository, o orderembeddings.Repository, e embedding.Embedder) *service {
 	return &service{
 		repo:      r,
 		orderRepo: o,
