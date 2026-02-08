@@ -104,10 +104,12 @@ func (r *OrderEmbeddingRepository) toDto(d *orderembeddings.OrderEmbedding) *Ord
 	}
 
 	if len(d.Items) > 0 {
+		j := 0
 		dbModel.Items = make([]bson.ObjectID, len(d.Items))
 		for i := range d.Items {
 			if oid, err := bson.ObjectIDFromHex(d.Items[i]); err == nil {
-				dbModel.Items = append(dbModel.Items, oid)
+				dbModel.Items[i] = oid
+				j++
 			}
 		}
 	}
