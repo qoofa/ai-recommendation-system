@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qoofa/AI-Recommendation-System/internal/core"
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 
-	orderembeddings "github.com/qoofa/AI-Recommendation-System/internal/domain/orderEmbeddings"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -31,7 +31,7 @@ func NewOrderEmbeddingRepository(db *mongo.Database) *OrderEmbeddingRepository {
 	return repo
 }
 
-func (r *OrderEmbeddingRepository) Save(ctx context.Context, d *orderembeddings.OrderEmbedding) (string, error) {
+func (r *OrderEmbeddingRepository) Save(ctx context.Context, d *core.OrderEmbedding) (string, error) {
 	if d == nil {
 		return "", appErr.New(appErr.BadRequest, "invalid input")
 	}
@@ -54,7 +54,7 @@ func (r *OrderEmbeddingRepository) Save(ctx context.Context, d *orderembeddings.
 	return oid.Hex(), nil
 }
 
-func (r *OrderEmbeddingRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]orderembeddings.OrderEmbedding, error) {
+func (r *OrderEmbeddingRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]core.OrderEmbedding, error) {
 	pipeline := bson.A{
 		bson.M{
 			"$vectorSearch": bson.M{
@@ -113,7 +113,7 @@ func (r *OrderEmbeddingRepository) ensureIndexes() {
 	}
 }
 
-func (r *OrderEmbeddingRepository) toDto(d *orderembeddings.OrderEmbedding) *OrderEmbeddingModel {
+func (r *OrderEmbeddingRepository) toDto(d *core.OrderEmbedding) *OrderEmbeddingModel {
 	if d == nil {
 		return nil
 	}
@@ -144,12 +144,12 @@ func (r *OrderEmbeddingRepository) toDto(d *orderembeddings.OrderEmbedding) *Ord
 	return dbModel
 }
 
-func (r *OrderEmbeddingRepository) toDomain(d *OrderEmbeddingModel) *orderembeddings.OrderEmbedding {
+func (r *OrderEmbeddingRepository) toDomain(d *OrderEmbeddingModel) *core.OrderEmbedding {
 	if d == nil {
 		return nil
 	}
 
-	model := &orderembeddings.OrderEmbedding{
+	model := &core.OrderEmbedding{
 		Embedding: d.Embedding,
 		CreatedAt: d.CreatedAt,
 		UpdatedAt: d.UpdatedAt,
@@ -173,8 +173,8 @@ func (r *OrderEmbeddingRepository) toDomain(d *OrderEmbeddingModel) *orderembedd
 	return model
 }
 
-func (r *OrderEmbeddingRepository) toDomains(models []OrderEmbeddingModel) []orderembeddings.OrderEmbedding {
-	result := make([]orderembeddings.OrderEmbedding, len(models))
+func (r *OrderEmbeddingRepository) toDomains(models []OrderEmbeddingModel) []core.OrderEmbedding {
+	result := make([]core.OrderEmbedding, len(models))
 	for i := range models {
 		result[i] = *r.toDomain(&models[i])
 	}

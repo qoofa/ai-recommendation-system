@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qoofa/AI-Recommendation-System/internal/core"
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
-	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -31,7 +32,7 @@ func NewFoodRepository(db *mongo.Database) *FoodRepository {
 	return repo
 }
 
-func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (string, error) {
+func (r *FoodRepository) Save(ctx context.Context, item *core.FoodItemModel) (string, error) {
 	if item == nil {
 		return "", appErr.New(appErr.BadRequest, "invalid input")
 	}
@@ -54,7 +55,7 @@ func (r *FoodRepository) Save(ctx context.Context, item *food.FoodItemModel) (st
 	return oid.Hex(), nil
 }
 
-func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemModel) ([]string, error) {
+func (r *FoodRepository) InsertMany(ctx context.Context, item []core.FoodItemModel) ([]string, error) {
 	data := r.toDtos(item, time.Now())
 
 	resp, err := r.collection.InsertMany(ctx, data)
@@ -71,7 +72,7 @@ func (r *FoodRepository) InsertMany(ctx context.Context, item []food.FoodItemMod
 	return result, nil
 }
 
-func (r *FoodRepository) Find(ctx context.Context) ([]food.FoodItemModel, error) {
+func (r *FoodRepository) Find(ctx context.Context) ([]core.FoodItemModel, error) {
 	cursor, err := r.collection.Find(ctx, bson.D{{}})
 	if err != nil {
 		return nil, appErr.Wrap(appErr.Internal, "internal", err)
@@ -85,7 +86,7 @@ func (r *FoodRepository) Find(ctx context.Context) ([]food.FoodItemModel, error)
 	return r.toDomains(d), nil
 }
 
-func (r *FoodRepository) FindByIds(ctx context.Context, ids []string) ([]food.FoodItemModel, error) {
+func (r *FoodRepository) FindByIds(ctx context.Context, ids []string) ([]core.FoodItemModel, error) {
 	objectIDs := make([]bson.ObjectID, 0, len(ids))
 	for _, idStr := range ids {
 		objID, err := bson.ObjectIDFromHex(idStr)
@@ -114,7 +115,7 @@ func (r *FoodRepository) FindByIds(ctx context.Context, ids []string) ([]food.Fo
 	return r.toDomains(d), nil
 }
 
-func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodItemModel, error) {
+func (r *FoodRepository) FindByID(ctx context.Context, id string) (*core.FoodItemModel, error) {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, appErr.New(appErr.BadRequest, "invalid id")
@@ -132,7 +133,7 @@ func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodIte
 	return r.toDomain(&m), nil
 }
 
-func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]food.FoodItemModel, error) {
+func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]core.FoodItemModel, error) {
 	filter := bson.M{
 		"$or": bson.A{
 			bson.M{"name": bson.M{"$regex": query, "$options": "i"}},
@@ -153,7 +154,7 @@ func (r *FoodRepository) FindByKeyword(ctx context.Context, query string) ([]foo
 	return r.toDomains(foodItem), nil
 }
 
-func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]food.FoodItemModel, error) {
+func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]core.FoodItemModel, error) {
 	pipeline := bson.A{
 		bson.M{
 			"$vectorSearch": bson.M{
@@ -223,7 +224,7 @@ func (r *FoodRepository) ensureIndexes() {
 	}
 }
 
-func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
+func (r *FoodRepository) toDto(d *core.FoodItemModel) *FoodItemModel {
 	if d == nil {
 		return nil
 	}
@@ -257,12 +258,12 @@ func (r *FoodRepository) toDto(d *food.FoodItemModel) *FoodItemModel {
 	return dbModel
 }
 
-func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
+func (r *FoodRepository) toDomain(d *FoodItemModel) *core.FoodItemModel {
 	if d == nil {
 		return nil
 	}
 
-	model := &food.FoodItemModel{
+	model := &core.FoodItemModel{
 		Name:        d.Name,
 		Description: d.Description,
 		Price:       d.Price,
@@ -276,9 +277,9 @@ func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
 	}
 
 	if d.Combos != nil {
-		model.Combos = make([]food.Combo, len(d.Combos))
+		model.Combos = make([]core.Combo, len(d.Combos))
 		for i, v := range d.Combos {
-			model.Combos[i] = food.Combo(v)
+			model.Combos[i] = core.Combo(v)
 		}
 	}
 
@@ -289,15 +290,15 @@ func (r *FoodRepository) toDomain(d *FoodItemModel) *food.FoodItemModel {
 	return model
 }
 
-func (r *FoodRepository) toDomains(models []FoodItemModel) []food.FoodItemModel {
-	result := make([]food.FoodItemModel, len(models))
+func (r *FoodRepository) toDomains(models []FoodItemModel) []core.FoodItemModel {
+	result := make([]core.FoodItemModel, len(models))
 	for i := range models {
 		result[i] = *r.toDomain(&models[i])
 	}
 	return result
 }
 
-func (r *FoodRepository) toDtos(d []food.FoodItemModel, overrideTime time.Time) []FoodItemModel {
+func (r *FoodRepository) toDtos(d []core.FoodItemModel, overrideTime time.Time) []FoodItemModel {
 	result := make([]FoodItemModel, len(d))
 
 	shouldOverried := !overrideTime.IsZero()
