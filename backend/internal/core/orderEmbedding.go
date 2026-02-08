@@ -16,8 +16,3 @@ type OrderEmbedding struct {
 type OrderEmbeddingService interface {
 	Train(ctx context.Context, items []string) (string, error)
 }
-
-type OrderEmbeddingRepository interface {
-	Save(ctx context.Context, d *OrderEmbedding) (string, error)
-	FindBySemantic(ctx context.Context, embedding []float64) ([]OrderEmbedding, error)
-}
