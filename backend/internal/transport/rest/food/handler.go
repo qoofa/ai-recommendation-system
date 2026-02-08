@@ -16,7 +16,7 @@ type FoodHandler struct {
 	service  food.Service
 }
 
-func NewFoodHandler(s food.Service) *FoodHandler {
+func New(s food.Service) *FoodHandler {
 	return &FoodHandler{
 		validate: validator.New(),
 		service:  s,

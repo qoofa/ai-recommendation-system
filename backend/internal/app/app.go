@@ -9,8 +9,10 @@ import (
 	"github.com/qoofa/AI-Recommendation-System/internal/storage/mongodb"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest"
 	foodH "github.com/qoofa/AI-Recommendation-System/internal/transport/rest/food"
+	orderembedding "github.com/qoofa/AI-Recommendation-System/internal/transport/rest/orderEmbedding"
 
 	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+	orderembeddings "github.com/qoofa/AI-Recommendation-System/internal/domain/orderEmbeddings"
 )
 
 type App struct {
@@ -26,8 +28,13 @@ func New() (*chi.Mux, error) {
 	embedder := embeddings.NewPythonProvider(os.Getenv("EMBEDDING_SERVER_URL"))
 
 	foodRepo := mongodb.NewFoodRepository(db)
-	foodServie := food.New(foodRepo, embedder)
-	foodHandler := foodH.NewFoodHandler(foodServie)
+	orderEmbeddingRepo := mongodb.NewOrderEmbeddingRepository(db)
 
-	return rest.NewRouter(foodHandler), nil
+	foodService := food.New(foodRepo, embedder)
+	orderEmbeddingService := orderembeddings.New(orderEmbeddingRepo, foodRepo)
+
+	foodHandler := foodH.New(foodService)
+	orderEmbeddingHandler := orderembedding.New(orderEmbeddingService)
+
+	return rest.NewRouter(foodHandler, orderEmbeddingHandler), nil
 }
