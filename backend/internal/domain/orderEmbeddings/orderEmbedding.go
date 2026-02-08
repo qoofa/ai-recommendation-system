@@ -13,6 +13,10 @@ type OrderEmbedding struct {
 	UpdatedAt time.Time
 }
 
+type Service interface {
+	Train(ctx context.Context, items []string) (string, error)
+}
+
 type Repository interface {
 	Save(ctx context.Context, d *OrderEmbedding) (string, error)
 }
