@@ -6,13 +6,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/qoofa/AI-Recommendation-System/internal/infrastructure/embeddings"
+	"github.com/qoofa/AI-Recommendation-System/internal/service"
 	"github.com/qoofa/AI-Recommendation-System/internal/storage/mongodb"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest"
 	foodH "github.com/qoofa/AI-Recommendation-System/internal/transport/rest/food"
 	orderembedding "github.com/qoofa/AI-Recommendation-System/internal/transport/rest/orderEmbedding"
-
-	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
-	orderembeddings "github.com/qoofa/AI-Recommendation-System/internal/domain/orderEmbeddings"
 )
 
 type App struct {
@@ -30,8 +28,8 @@ func New() (*chi.Mux, error) {
 	foodRepo := mongodb.NewFoodRepository(db)
 	orderEmbeddingRepo := mongodb.NewOrderEmbeddingRepository(db)
 
-	foodService := food.New(foodRepo, orderEmbeddingRepo, embedder)
-	orderEmbeddingService := orderembeddings.New(orderEmbeddingRepo, foodRepo)
+	foodService := service.NewFoodService(foodRepo, orderEmbeddingRepo, embedder)
+	orderEmbeddingService := service.NewOrderEmbeddingService(orderEmbeddingRepo, foodRepo)
 
 	foodHandler := foodH.New(foodService)
 	orderEmbeddingHandler := orderembedding.New(orderEmbeddingService)
