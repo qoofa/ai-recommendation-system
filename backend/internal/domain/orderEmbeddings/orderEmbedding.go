@@ -1,6 +1,9 @@
 package orderembeddings
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type OrderEmbedding struct {
 	ID        string
@@ -8,4 +11,8 @@ type OrderEmbedding struct {
 	Items     []string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type Repository interface {
+	Save(ctx context.Context, d *OrderEmbedding) (string, error)
 }

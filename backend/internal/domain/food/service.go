@@ -13,7 +13,7 @@ type service struct {
 	embedding embedding.Embedder
 }
 
-func NewService(r Repository, e embedding.Embedder) *service {
+func New(r Repository, e embedding.Embedder) *service {
 	return &service{
 		repo:      r,
 		embedding: e,

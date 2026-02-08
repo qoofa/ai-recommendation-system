@@ -26,7 +26,7 @@ func New() (*chi.Mux, error) {
 	embedder := embeddings.NewPythonProvider(os.Getenv("EMBEDDING_SERVER_URL"))
 
 	foodRepo := mongodb.NewFoodRepository(db)
-	foodServie := food.NewService(foodRepo, embedder)
+	foodServie := food.New(foodRepo, embedder)
 	foodHandler := foodH.NewFoodHandler(foodServie)
 
 	return rest.NewRouter(foodHandler), nil
