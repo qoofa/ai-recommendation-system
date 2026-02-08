@@ -85,6 +85,35 @@ func (r *FoodRepository) Find(ctx context.Context) ([]food.FoodItemModel, error)
 	return r.toDomains(d), nil
 }
 
+func (r *FoodRepository) FindByIds(ctx context.Context, ids []string) ([]food.FoodItemModel, error) {
+	objectIDs := make([]bson.ObjectID, 0, len(ids))
+	for _, idStr := range ids {
+		objID, err := bson.ObjectIDFromHex(idStr)
+		if err != nil {
+			continue
+		}
+		objectIDs = append(objectIDs, objID)
+	}
+
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": objectIDs,
+		},
+	}
+
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal", err)
+	}
+
+	var d []FoodItemModel
+	if err := cursor.All(ctx, &d); err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal", err)
+	}
+
+	return r.toDomains(d), nil
+}
+
 func (r *FoodRepository) FindByID(ctx context.Context, id string) (*food.FoodItemModel, error) {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
