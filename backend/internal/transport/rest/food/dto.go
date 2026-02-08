@@ -3,7 +3,7 @@ package food
 import (
 	"time"
 
-	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+	"github.com/qoofa/AI-Recommendation-System/internal/core"
 )
 
 type createDto struct {
@@ -15,8 +15,8 @@ type createDto struct {
 	SalesCount  int     `json:"sales_count" validate:"gte=0"`
 }
 
-func (d *createDto) toDomain() *food.FoodItemModel {
-	return &food.FoodItemModel{
+func (d *createDto) toDomain() *core.FoodItemModel {
+	return &core.FoodItemModel{
 		Name:        d.Name,
 		Description: d.Description,
 		Price:       d.Price,
@@ -39,7 +39,7 @@ type SearchResponseDto struct {
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
 
-func TOSearchResponse(m food.FoodItemModel) SearchResponseDto {
+func TOSearchResponse(m core.FoodItemModel) SearchResponseDto {
 	return SearchResponseDto{
 		ID:          m.ID,
 		Name:        m.Name,

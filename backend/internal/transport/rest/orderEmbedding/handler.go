@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	orderembeddings "github.com/qoofa/AI-Recommendation-System/internal/domain/orderEmbeddings"
+	"github.com/qoofa/AI-Recommendation-System/internal/core"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/response"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
@@ -13,10 +13,10 @@ import (
 
 type OrderEmbeddingHanlder struct {
 	validate *validator.Validate
-	service  orderembeddings.Service
+	service  core.OrderEmbeddingService
 }
 
-func New(s orderembeddings.Service) *OrderEmbeddingHanlder {
+func New(s core.OrderEmbeddingService) *OrderEmbeddingHanlder {
 	return &OrderEmbeddingHanlder{
 		validate: validator.New(),
 		service:  s,

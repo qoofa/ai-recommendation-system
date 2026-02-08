@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/qoofa/AI-Recommendation-System/internal/domain/food"
+	"github.com/qoofa/AI-Recommendation-System/internal/core"
 	"github.com/qoofa/AI-Recommendation-System/internal/transport/rest/response"
 
 	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
@@ -13,10 +13,10 @@ import (
 
 type FoodHandler struct {
 	validate *validator.Validate
-	service  food.Service
+	service  core.FoodService
 }
 
-func New(s food.Service) *FoodHandler {
+func New(s core.FoodService) *FoodHandler {
 	return &FoodHandler{
 		validate: validator.New(),
 		service:  s,
