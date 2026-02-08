@@ -6,16 +6,20 @@ import (
 	"sort"
 
 	"github.com/qoofa/AI-Recommendation-System/internal/domain/embedding"
+
+	appErr "github.com/qoofa/AI-Recommendation-System/internal/core/errors"
 )
 
 type service struct {
 	repo      Repository
+	orderRepo OrderRepository
 	embedding embedding.Embedder
 }
 
-func New(r Repository, e embedding.Embedder) *service {
+func New(r Repository, o OrderRepository, e embedding.Embedder) *service {
 	return &service{
 		repo:      r,
+		orderRepo: o,
 		embedding: e,
 	}
 }
@@ -111,4 +115,65 @@ func (s *service) Create(ctx context.Context, d FoodItemModel) (string, error) {
 	d.Embedding = embedding
 
 	return s.repo.Save(ctx, &d)
+}
+
+func (s *service) Recommend(ctx context.Context, itemId string) ([]FoodItemModel, error) {
+	if itemId == "" {
+		return nil, appErr.New(appErr.BadRequest, "invalid id")
+	}
+
+	item, err := s.repo.FindByID(ctx, itemId)
+	if err != nil {
+		return nil, err
+	}
+	if item == nil {
+		return nil, appErr.New(appErr.BadRequest, "item not found")
+	}
+
+	matches, err := s.orderRepo.FindBySemantic(ctx, item.Embedding)
+	if err != nil {
+		return nil, err
+	}
+
+	counts := make(map[string]int)
+
+	for i := range matches {
+		for _, id := range matches[i].Items {
+			if id != itemId {
+				counts[id]++
+			}
+		}
+	}
+
+	type entry struct {
+		Key   string
+		Value int
+	}
+
+	var sortedEntries []entry
+	for k, v := range counts {
+		sortedEntries = append(sortedEntries, entry{Key: k, Value: v})
+	}
+
+	sort.Slice(sortedEntries, func(i, j int) bool {
+		return sortedEntries[i].Value > sortedEntries[j].Value
+	})
+
+	limit := 6
+	if len(sortedEntries) < 6 {
+		limit = len(sortedEntries)
+	}
+
+	recommentedIds := make([]string, limit)
+
+	for i := range limit {
+		recommentedIds[i] = sortedEntries[i].Key
+	}
+
+	recommented, err := s.repo.FindByIds(ctx, recommentedIds)
+	if err != nil {
+		return nil, err
+	}
+
+	return recommented, nil
 }

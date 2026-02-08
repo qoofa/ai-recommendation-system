@@ -43,3 +43,7 @@ type Repository interface {
 	FindByKeyword(ctx context.Context, query string) ([]FoodItemModel, error)
 	FindBySemantic(ctx context.Context, embedding []float64) ([]FoodItemModel, error)
 }
+
+type OrderRepository interface {
+	FindBySemantic(ctx context.Context, embedding []float64) ([]any, error)
+}

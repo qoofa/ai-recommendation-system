@@ -30,7 +30,7 @@ func New() (*chi.Mux, error) {
 	foodRepo := mongodb.NewFoodRepository(db)
 	orderEmbeddingRepo := mongodb.NewOrderEmbeddingRepository(db)
 
-	foodService := food.New(foodRepo, embedder)
+	foodService := food.New(foodRepo, orderEmbeddingRepo, embedder)
 	orderEmbeddingService := orderembeddings.New(orderEmbeddingRepo, foodRepo)
 
 	foodHandler := foodH.New(foodService)
