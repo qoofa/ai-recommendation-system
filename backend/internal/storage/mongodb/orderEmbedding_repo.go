@@ -26,7 +26,7 @@ func NewOrderEmbeddingRepository(db *mongo.Database) *OrderEmbeddingRepository {
 		collection: db.Collection("order_embeddings"),
 	}
 
-	repo.ensureOrderEmbeddingIndexes()
+	repo.ensureIndexes()
 
 	return repo
 }
@@ -54,7 +54,34 @@ func (r *OrderEmbeddingRepository) Save(ctx context.Context, d *orderembeddings.
 	return oid.Hex(), nil
 }
 
-func (r *OrderEmbeddingRepository) ensureOrderEmbeddingIndexes() {
+func (r *OrderEmbeddingRepository) FindBySemantic(ctx context.Context, embedding []float64) ([]orderembeddings.OrderEmbedding, error) {
+	pipeline := bson.A{
+		bson.M{
+			"$vectorSearch": bson.M{
+				"index":         "order_vector_index",
+				"path":          "embedding",
+				"queryVector":   embedding,
+				"numCandidates": 100,
+				"limit":         20,
+			},
+		},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
+	}
+	defer cursor.Close(ctx)
+
+	var data []OrderEmbeddingModel
+	if err := cursor.All(ctx, &data); err != nil {
+		return nil, appErr.Wrap(appErr.Internal, "internal error", err)
+	}
+
+	return r.toDomains(data), nil
+}
+
+func (r *OrderEmbeddingRepository) ensureIndexes() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -117,29 +144,39 @@ func (r *OrderEmbeddingRepository) toDto(d *orderembeddings.OrderEmbedding) *Ord
 	return dbModel
 }
 
-// func (r *OrderEmbeddingRepository) toDomain(d *OrderEmbeddingModel) *orderembeddings.OrderEmbedding {
-// 	if d == nil {
-// 		return nil
-// 	}
+func (r *OrderEmbeddingRepository) toDomain(d *OrderEmbeddingModel) *orderembeddings.OrderEmbedding {
+	if d == nil {
+		return nil
+	}
 
-// 	model := &orderembeddings.OrderEmbedding{
-// 		Embedding: d.Embedding,
-// 		CreatedAt: d.CreatedAt,
-// 		UpdatedAt: d.UpdatedAt,
-// 	}
+	model := &orderembeddings.OrderEmbedding{
+		Embedding: d.Embedding,
+		CreatedAt: d.CreatedAt,
+		UpdatedAt: d.UpdatedAt,
+	}
 
-// 	if !d.ID.IsZero() {
-// 		model.ID = d.ID.Hex()
-// 	}
+	if !d.ID.IsZero() {
+		model.ID = d.ID.Hex()
+	}
 
-// 	if len(d.Items) > 0 {
-// 		model.Items = make([]string, len(d.Items))
-// 		for i := range d.Items {
-// 			if !d.Items[i].IsZero() {
-// 				model.Items = append(model.Items, d.Items[i].Hex())
-// 			}
-// 		}
-// 	}
+	if len(d.Items) > 0 {
+		j := 0
+		model.Items = make([]string, len(d.Items))
+		for i := range d.Items {
+			if !d.Items[i].IsZero() {
+				model.Items[j] = d.Items[i].Hex()
+				j++
+			}
+		}
+	}
 
-// 	return model
-// }
+	return model
+}
+
+func (r *OrderEmbeddingRepository) toDomains(models []OrderEmbeddingModel) []orderembeddings.OrderEmbedding {
+	result := make([]orderembeddings.OrderEmbedding, len(models))
+	for i := range models {
+		result[i] = *r.toDomain(&models[i])
+	}
+	return result
+}

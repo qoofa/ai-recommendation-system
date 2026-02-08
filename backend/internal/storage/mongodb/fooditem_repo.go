@@ -26,7 +26,7 @@ func NewFoodRepository(db *mongo.Database) *FoodRepository {
 		collection: db.Collection("food_items"),
 	}
 
-	repo.ensureFoodIndexes()
+	repo.ensureIndexes()
 
 	return repo
 }
@@ -191,7 +191,7 @@ func (r *FoodRepository) FindBySemantic(ctx context.Context, embedding []float64
 	return r.toDomains(foodItem), nil
 }
 
-func (r *FoodRepository) ensureFoodIndexes() {
+func (r *FoodRepository) ensureIndexes() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

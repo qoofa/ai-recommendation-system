@@ -19,4 +19,5 @@ type Service interface {
 
 type Repository interface {
 	Save(ctx context.Context, d *OrderEmbedding) (string, error)
+	FindBySemantic(ctx context.Context, embedding []float64) ([]OrderEmbedding, error)
 }
