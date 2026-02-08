@@ -28,3 +28,12 @@ type FoodItemModel struct {
 	CreatedAt time.Time `bson:"createdAt,omitempty"`
 	UpdatedAt time.Time `bson:"updatedAt,omitempty"`
 }
+
+type OrderEmbeddingModel struct {
+	ID        bson.ObjectID   `bson:"_id,omitempty"`
+	Items     []bson.ObjectID `bson:"items"`
+	Embedding []float64       `bson:"embedding"`
+
+	CreatedAt time.Time `bson:"createdAt,omitempty"`
+	UpdatedAt time.Time `bson:"updatedAt,omitempty"`
+}
