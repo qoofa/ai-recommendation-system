@@ -115,6 +115,17 @@ func (h *FoodHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, result)
 }
 
+// Recommend godoc
+// @Summary      Recommend food item
+// @Description  Recommends food items related to the food item selected
+// @Tags         food
+// @Accept       json
+// @Produce      json
+// @Param        itemId  query     string  true  "Item Id Selected"
+// @Success      200   {object}  response.APIResponse{data=string}
+// @Failure      400   {object}  response.APIResponse{error=response.APIError}
+// @Failure      500   {object}  response.APIResponse{error=response.APIError}
+// @Router       /food/recommend [get]
 func (h *FoodHandler) Recommend(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
