@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/qoofa/AI-Recommendation-System/internal/app"
 
@@ -33,6 +34,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8000"
+	}
+
+	log.Println("listening on :", port)
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
