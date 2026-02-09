@@ -88,10 +88,10 @@ func (r *OrderEmbeddingRepository) ensureIndexes() {
 	_ = r.collection.Database().CreateCollection(ctx, r.collection.Name())
 
 	cmd := bson.D{
-		{Key: "createSearchIndexes", Value: "order_embeddings"},
+		{Key: "createSearchIndexes", Value: r.collection.Name()},
 		{Key: "indexes", Value: bson.A{
 			bson.M{
-				"name": "vector_index",
+				"name": "order_vector_index",
 				"type": "vectorSearch",
 				"definition": bson.M{
 					"fields": bson.A{
