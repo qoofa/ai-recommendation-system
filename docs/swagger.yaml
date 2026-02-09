@@ -1,0 +1,267 @@
+basePath: /api/v1
+definitions:
+  food.SearchResponseDto:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      sales_count:
+        type: integer
+      score:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  food.createDto:
+    properties:
+      category:
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      image:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      price:
+        type: number
+      sales_count:
+        minimum: 0
+        type: integer
+    required:
+    - category
+    - description
+    - image
+    - name
+    - price
+    type: object
+  orderembedding.TrainDto:
+    properties:
+      items:
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - items
+    type: object
+  response.APIError:
+    properties:
+      code:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/response.FieldError'
+        type: array
+      message:
+        type: string
+    type: object
+  response.APIResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/response.APIError'
+      success:
+        type: boolean
+    type: object
+  response.FieldError:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a AI Recommendation System server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: AI Recommendation System API
+  version: "1.0"
+paths:
+  /food:
+    get:
+      consumes:
+      - application/json
+      description: Get all food items from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/food.SearchResponseDto'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+      summary: List food items
+      tags:
+      - food
+    post:
+      consumes:
+      - application/json
+      description: Create a new food item and generate its embedding
+      parameters:
+      - description: Food item to create
+        in: body
+        name: food
+        required: true
+        schema:
+          $ref: '#/definitions/food.createDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+      summary: Create food item
+      tags:
+      - food
+  /food/search:
+    get:
+      consumes:
+      - application/json
+      description: Search food items by name or description using vector search
+      parameters:
+      - description: Search query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/food.SearchResponseDto'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+      summary: Search food items
+      tags:
+      - food
+  /order/train:
+    post:
+      consumes:
+      - application/json
+      description: Calculate order embedding based on a list of food item IDs
+      parameters:
+      - description: Order items to train
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/orderembedding.TrainDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.APIResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/response.APIError'
+              type: object
+      summary: Train order embedding
+      tags:
+      - order
+swagger: "2.0"

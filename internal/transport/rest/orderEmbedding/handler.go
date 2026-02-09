@@ -23,6 +23,17 @@ func New(s core.OrderEmbeddingService) *OrderEmbeddingHanlder {
 	}
 }
 
+// Train godoc
+// @Summary      Train order embedding
+// @Description  Calculate order embedding based on a list of food item IDs
+// @Tags         order
+// @Accept       json
+// @Produce      json
+// @Param        order  body      TrainDto  true  "Order items to train"
+// @Success      200    {object}  response.APIResponse{data=string}
+// @Failure      400    {object}  response.APIResponse{error=response.APIError}
+// @Failure      500    {object}  response.APIResponse{error=response.APIError}
+// @Router       /order/train [post]
 func (h *OrderEmbeddingHanlder) Train(w http.ResponseWriter, r *http.Request) {
 	var body TrainDto
 

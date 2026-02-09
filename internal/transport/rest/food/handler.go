@@ -23,6 +23,15 @@ func New(s core.FoodService) *FoodHandler {
 	}
 }
 
+// Find godoc
+// @Summary      List food items
+// @Description  Get all food items from the database
+// @Tags         food
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  response.APIResponse{data=[]SearchResponseDto}
+// @Failure      500  {object}  response.APIResponse{error=response.APIError}
+// @Router       /food [get]
 func (h *FoodHandler) Find(w http.ResponseWriter, r *http.Request) {
 	d, err := h.service.Find(r.Context())
 	if err != nil {
@@ -38,6 +47,17 @@ func (h *FoodHandler) Find(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, data)
 }
 
+// Search godoc
+// @Summary      Search food items
+// @Description  Search food items by name or description using vector search
+// @Tags         food
+// @Accept       json
+// @Produce      json
+// @Param        query  query     string  true  "Search query"
+// @Success      200    {object}  response.APIResponse{data=[]SearchResponseDto}
+// @Failure      400    {object}  response.APIResponse{error=response.APIError}
+// @Failure      500    {object}  response.APIResponse{error=response.APIError}
+// @Router       /food/search [get]
 func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 	var q = r.URL.Query()
 
@@ -62,6 +82,17 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, data)
 }
 
+// Create godoc
+// @Summary      Create food item
+// @Description  Create a new food item and generate its embedding
+// @Tags         food
+// @Accept       json
+// @Produce      json
+// @Param        food  body      createDto  true  "Food item to create"
+// @Success      200   {object}  response.APIResponse{data=string}
+// @Failure      400   {object}  response.APIResponse{error=response.APIError}
+// @Failure      500   {object}  response.APIResponse{error=response.APIError}
+// @Router       /food [post]
 func (h *FoodHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var body createDto
 
