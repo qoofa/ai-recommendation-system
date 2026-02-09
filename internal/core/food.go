@@ -32,4 +32,5 @@ type FoodService interface {
 	Find(ctx context.Context) ([]FoodItemModel, error)
 	Search(ctx context.Context, query string) ([]FoodItemModel, error)
 	Create(ctx context.Context, d FoodItemModel) (string, error)
+	Recommend(ctx context.Context, itemId string) ([]FoodItemModel, error)
 }

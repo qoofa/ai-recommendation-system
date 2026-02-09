@@ -114,3 +114,22 @@ func (h *FoodHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	response.Success(w, result)
 }
+
+func (h *FoodHandler) Recommend(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	itemId := q.Get("itemId")
+
+	if itemId == "" {
+		response.Error(w, appErr.New(appErr.BadRequest, "itemId is required"))
+		return
+	}
+
+	result, err := h.service.Recommend(r.Context(), itemId)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	response.Success(w, result)
+}
