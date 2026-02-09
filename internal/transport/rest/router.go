@@ -17,7 +17,7 @@ func NewRouter(foodHandler *food.FoodHandler, OrderEmbeddingHandler *orderembedd
 		r.Get("/food", foodHandler.Find)
 		r.Post("/food", foodHandler.Create)
 		r.Get("/food/search", foodHandler.Search)
-		r.Get("/food/recommend", foodHandler.Recommend)	
+		r.Get("/food/recommend", foodHandler.Recommend)
 
 		r.Post("/order/train", OrderEmbeddingHandler.Train)
 	})
