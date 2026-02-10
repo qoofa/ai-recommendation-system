@@ -40,12 +40,7 @@ func (h *FoodHandler) Find(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := make([]FoodResponseDto, len(d))
-	for i := range d {
-		data[i] = ToFoodResponse(d[i])
-	}
-
-	response.Success(w, data)
+	response.Success(w, ToFoodResponses(d))
 }
 
 // Search godoc
@@ -76,12 +71,7 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := make([]FoodResponseDto, len(d))
-	for i := range d {
-		data[i] = ToFoodResponse(d[i])
-	}
-
-	response.Success(w, data)
+	response.Success(w, ToFoodResponses(d))
 }
 
 // Create godoc
@@ -140,16 +130,11 @@ func (h *FoodHandler) Recommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := h.service.Recommend(r.Context(), itemId)
+	d, err := h.service.Recommend(r.Context(), itemId)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
 
-	data := make([]FoodResponseDto, len(result))
-	for i := range result {
-		data[i] = ToFoodResponse(result[i])
-	}
-
-	response.Success(w, data)
+	response.Success(w, ToFoodResponses(d))
 }

@@ -53,3 +53,11 @@ func ToFoodResponse(m core.FoodItemModel) FoodResponseDto {
 		UpdatedAt:   m.UpdatedAt,
 	}
 }
+
+func ToFoodResponses(m []core.FoodItemModel) []FoodResponseDto {
+	data := make([]FoodResponseDto, len(m))
+	for i := range m {
+		data[i] = ToFoodResponse(m[i])
+	}
+	return data
+}
