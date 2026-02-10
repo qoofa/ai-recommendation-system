@@ -40,9 +40,9 @@ func (h *FoodHandler) Find(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := make([]SearchResponseDto, len(d))
+	data := make([]FoodResponseDto, len(d))
 	for i := range d {
-		data[i] = TOSearchResponse(d[i])
+		data[i] = ToFoodResponse(d[i])
 	}
 
 	response.Success(w, data)
@@ -76,9 +76,9 @@ func (h *FoodHandler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := make([]SearchResponseDto, len(d))
+	data := make([]FoodResponseDto, len(d))
 	for i := range d {
-		data[i] = TOSearchResponse(d[i])
+		data[i] = ToFoodResponse(d[i])
 	}
 
 	response.Success(w, data)
@@ -146,5 +146,10 @@ func (h *FoodHandler) Recommend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(w, result)
+	data := make([]FoodResponseDto, len(result))
+	for i := range result {
+		data[i] = ToFoodResponse(result[i])
+	}
+
+	response.Success(w, data)
 }

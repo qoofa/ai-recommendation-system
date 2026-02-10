@@ -26,7 +26,7 @@ func (d *createDto) toDomain() *core.FoodItemModel {
 	}
 }
 
-type SearchResponseDto struct {
+type FoodResponseDto struct {
 	ID          string    `json:"id,omitempty"`
 	Name        string    `json:"name,omitempty"`
 	Description string    `json:"description,omitempty"`
@@ -39,8 +39,8 @@ type SearchResponseDto struct {
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
 
-func TOSearchResponse(m core.FoodItemModel) SearchResponseDto {
-	return SearchResponseDto{
+func ToFoodResponse(m core.FoodItemModel) FoodResponseDto {
+	return FoodResponseDto{
 		ID:          m.ID,
 		Name:        m.Name,
 		Description: m.Description,
