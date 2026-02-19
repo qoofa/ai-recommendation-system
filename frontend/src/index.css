@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 240 25% 4%;
+    --foreground: 210 40% 98%;
+
+    --card: 240 25% 6%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 240 25% 6%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 263 90% 65%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 240 20% 12%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 240 15% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 190 90% 50%;
+    --accent-foreground: 240 25% 4%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 20% 18%;
+    --input: 240 20% 18%;
+    --ring: 263 90% 65%;
+
+    --radius: 1rem;
+
+    --gradient-cyber: linear-gradient(135deg, hsl(263 90% 65% / 0.2), hsl(190 90% 50% / 0.1));
+    --gradient-mesh: radial-gradient(at 0% 0%, hsla(263, 90%, 65%, 0.15) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(190, 90%, 50%, 0.15) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(280, 90%, 65%, 0.15) 0, transparent 50%);
+
+    --shadow-neon: 0 0 20px hsl(263 90% 65% / 0.3);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.82);
+
+    --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10 shadow-glass;
+  }
+
+  .neon-glow {
+    box-shadow: var(--shadow-neon);
+  }
+
+  .text-neon {
+    @apply bg-gradient-to-r from-primary via-purple-400 to-accent bg-clip-text text-transparent;
+    filter: drop-shadow(0 0 8px hsl(263 90% 65% / 0.5));
+  }
+
+  .hover-lift {
+    transition: var(--transition-bounce);
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-2 scale-[1.02];
+    box-shadow: var(--shadow-neon);
+  }
+
+  .mesh-bg {
+    background: var(--background);
+    background-image: var(--gradient-mesh);
+  }
+}
