@@ -21,7 +21,7 @@ The system is built to be a highly extendable architecture. The core backend use
 
 ```mermaid
 graph TD
-    Client[ReactJS Vite Frontend] --> GoAPI[Golang API Server]
+    Client[ReactJS] --> GoAPI[Golang API Server]
     GoAPI --> Mongo[(MongoDB - Vector Support)]
     GoAPI --> PyAPI[Python FastAPI Server]
     PyAPI --> Model[Jina AI Embeddings]
